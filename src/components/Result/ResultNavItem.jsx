@@ -2,14 +2,9 @@ import React from 'react';
 import { NavItem, NavLink } from 'reactstrap';
 
 /* eslint react/prop-types: 0 */
-const ResultNavItem = ({ label }) => (
+const ResultNavItem = ({ label, active, tabIndex, handleTabChange }) => (
   <NavItem>
-    <NavLink
-      onClick={() => {
-        console.log(label);
-      }}
-      active
-    >
+    <NavLink onClick={() => handleTabChange(tabIndex)} active={active}>
       {label}
     </NavLink>
   </NavItem>

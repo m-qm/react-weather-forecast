@@ -5,6 +5,7 @@ import _ from 'lodash';
 import $ from 'jquery';
 import SearchBar from './Searchbar';
 import ResultNav from './Result/ResultNav';
+import Datalist from './Datalist';
 
 /* eslint react/no-unused-state: 0 */
 class App extends React.Component {
@@ -16,31 +17,50 @@ class App extends React.Component {
     });
 
     this.state = {
-      city: '',
-      matches: [],
+      matchedCities: [],
+      activeTab: 0,
     };
+    this.DatalistRef = 'matchedCities';
 
     this.handleSearch = _.debounce(this.handleSearch.bind(this), 400);
+    this.handleTabChange = this.handleTabChange.bind(this);
+  }
+
+  handleTabChange(activeTab) {
+    this.setState({ activeTab });
   }
 
   handleSearch(city) {
-    this.setState({
-      city,
-      matches: this.cities.filter(item =>
-        item.name.toLowerCase().includes(city)
-      ),
-    });
+    const matchedCities =
+      city.length < 4
+        ? []
+        : this.cities.filter(item => item.name.toLowerCase().startsWith(city));
+
+    console.log(matchedCities);
+    this.setState({ matchedCities });
   }
 
   render() {
+    const { activeTab, matchedCities } = this.state;
+
     return (
       <div className="app">
         <Container>
           <h1 className="app__title">React Forecast</h1>
           <Row>
             <Col>
-              <SearchBar handleSearch={this.handleSearch} />
-              <ResultNav />
+              <SearchBar
+                handleSearch={this.handleSearch}
+                datalistRef={this.DatalistRef}
+              />
+              <Datalist
+                datalistRef={this.DatalistRef}
+                options={matchedCities}
+              />
+              <ResultNav
+                activeTab={activeTab}
+                handleTabChange={this.handleTabChange}
+              />
             </Col>
           </Row>
           Here the result display will be rendered
