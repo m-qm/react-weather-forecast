@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col } from 'reactstrap';
-import unixToTime from '../../conversions';
+import { unixToTime } from '../../conversions';
 
 /* eslint react/prop-types: 0 */
 const CurrentResult = ({ weather, sys, main, wind }) => (
@@ -17,9 +17,9 @@ const CurrentResult = ({ weather, sys, main, wind }) => (
       </Col>
       <Col xs="6">{`${main.humidity}%`}</Col>
       <Col xs="6">
-        <h6>Pressure</h6>
+        <h6>Pressure (Sea level)</h6>
       </Col>
-      <Col xs="6">{`${main.pressure}`}</Col>
+      <Col xs="6">{`${main.pressure}hPa`}</Col>
       <Col xs="6">
         <h6>Sunrise</h6>
       </Col>

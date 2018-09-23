@@ -3,47 +3,51 @@ import { Card, Nav, CardHeader, CardBody } from 'reactstrap';
 import ResultNavItem from './ResultNavItem';
 import CurrentResult from './CurrentResult';
 import ForecastResult from './ForecastResult';
-import unixToTime from '../../conversions';
+import {
+  days,
+  unixToTime,
+  unixToDateTime,
+  normalizeDay,
+} from '../../conversions';
 
 /* eslint react/prop-types: 0 */
-const d = new Date().getDay();
-const days = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-];
-const normalzDay = increm => (d + increm) % 7;
 const navLabels = [
   'Current',
   'Today',
   'Tomorrow',
-  days[normalzDay(2)],
-  days[normalzDay(3)],
-  days[normalzDay(4)],
+  days[normalizeDay(2)],
+  days[normalizeDay(3)],
+  days[normalizeDay(4)],
 ];
-const CHART_TYPES = {
+const TYPES = {
   TEMPERATURE: 'temp',
   HUMIDITY: 'humidity',
+  WIND: 'wind speed',
   PRESSURE: 'pressure',
 };
-const generateChartData = (dataType, weatherData, day) => {
-  /* Extract all data for the for the day we need */
+
+/* Returns an object with { key::dataType : value::weatherData array } */
+const genChartData = (weatherData, day) => {
+  const generatedData = {};
+
+  /* Extract all data for the days we need */
   const dayData = weatherData.filter(
-    data => new Date(data.dt_txt).getDay() === day
+    data => new Date(unixToDateTime(data.dt)).getDay() === day
   );
-  /* Extract all data for the type we need */
-  const chartData = [];
-  dayData.forEach(data => {
-    chartData.push({
-      time: unixToTime(data.dt),
-      value: data.main[dataType],
+
+  /* Extract all data for the types we need */
+  Object.values(TYPES).forEach(dataType => {
+    const chartData = [];
+    dayData.forEach(data => {
+      chartData.push({ time: unixToTime(data.dt) });
+      /* Add second key after to give it the type name */
+      chartData[chartData.length - 1][dataType] =
+        dataType === 'wind speed' ? data.wind.speed : data.main[dataType];
     });
+    /* Wrap weatherData in an object with the type as key */
+    generatedData[dataType] = chartData;
   });
-  return chartData;
+  return generatedData;
 };
 
 /* eslint no-unused-vars: 0 */
@@ -76,21 +80,11 @@ const Result = ({ activeTab, handleTabChange, forecast, current }) => (
             />
           ) : (
             <ForecastResult
-              temperature={generateChartData(
-                CHART_TYPES.TEMPERATURE,
+              data={genChartData(
                 forecast,
-                normalzDay(d + activeTab - 1)
+                normalizeDay(new Date().getUTCDay() + activeTab - 1)
               )}
-              humidity={generateChartData(
-                CHART_TYPES.HUMIDITY,
-                forecast,
-                normalzDay(d + activeTab - 1)
-              )}
-              pressure={generateChartData(
-                CHART_TYPES.PRESSURE,
-                forecast,
-                normalzDay(d + activeTab - 1)
-              )}
+              types={Object.values(TYPES)}
             />
           )}
         </div>
