@@ -1,47 +1,43 @@
 import React from 'react';
 import '../build/styles/App.css';
 import { Row, Col, Container } from 'reactstrap';
-import _ from 'lodash';
-import $ from 'jquery';
+import axios from 'axios';
 import SearchBar from './Searchbar';
 import ResultNav from './Result/ResultNav';
-import Datalist from './Datalist';
 
-/* eslint react/no-unused-state: 0 */
+const API_KEY = 'fbac2a1b66c21f764ad32d558e42b58c';
+
 class App extends React.Component {
   constructor(props) {
     super(props);
 
-    $.getJSON('/json/cities.min.json', json => {
-      this.cities = json;
-    });
+    this.state = { activeTab: 0 };
 
-    this.state = {
-      matchedCities: [],
-      activeTab: 0,
-    };
-    this.DatalistRef = 'matchedCities';
-
-    this.handleSearch = _.debounce(this.handleSearch.bind(this), 400);
     this.handleTabChange = this.handleTabChange.bind(this);
+    this.handleFetch = this.handleFetch.bind(this);
   }
 
   handleTabChange(activeTab) {
     this.setState({ activeTab });
   }
 
-  handleSearch(city) {
-    const matchedCities =
-      city.length < 4
-        ? []
-        : this.cities.filter(item => item.name.toLowerCase().startsWith(city));
-
-    console.log(matchedCities);
-    this.setState({ matchedCities });
+  /* eslint class-methods-use-this: 0 */
+  handleFetch(id) {
+    console.log(id);
+    axios
+      .get(
+        `https://api.openweathermap.org/data/2.5/forecast?id=${id}&appid=${API_KEY}`
+      )
+      .then(response => {
+        console.log(response);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   render() {
-    const { activeTab, matchedCities } = this.state;
+    const { activeTab } = this.state;
 
     return (
       <div className="app">
@@ -49,14 +45,8 @@ class App extends React.Component {
           <h1 className="app__title">React Forecast</h1>
           <Row>
             <Col>
-              <SearchBar
-                handleSearch={this.handleSearch}
-                datalistRef={this.DatalistRef}
-              />
-              <Datalist
-                datalistRef={this.DatalistRef}
-                options={matchedCities}
-              />
+              <SearchBar handleFetch={this.handleFetch} />
+
               <ResultNav
                 activeTab={activeTab}
                 handleTabChange={this.handleTabChange}
