@@ -1,6 +1,7 @@
 import React from 'react';
-import { Card, Nav, CardHeader, CardBody, CardText } from 'reactstrap';
+import { Card, Nav, CardHeader, CardBody } from 'reactstrap';
 import ResultNavItem from './ResultNavItem';
+import CurrentResult from './CurrentResult';
 
 /* eslint react/prop-types: 0 */
 const d = new Date().getDay();
@@ -23,7 +24,8 @@ const navLabels = [
   days[normalzDay(4)],
 ];
 
-const ResultNav = ({ activeTab, handleTabChange }) => (
+/* eslint no-unused-vars: 0 */
+const Result = ({ activeTab, handleTabChange, forecast, current }) => (
   <Card>
     <CardHeader>
       <Nav tabs>
@@ -39,9 +41,27 @@ const ResultNav = ({ activeTab, handleTabChange }) => (
       </Nav>
     </CardHeader>
     <CardBody>
-      <CardText>Body</CardText>
+      {Object.keys(current).length === 0 ? (
+        ''
+      ) : (
+        <div>
+          {!activeTab ? (
+            <CurrentResult
+              main={current.main}
+              weather={current.weather[0]}
+              wind={current.wind}
+              sys={current.sys}
+            />
+          ) : (
+            ''
+          )}
+        </div>
+      )}
     </CardBody>
   </Card>
 );
 
-export default ResultNav;
+export default Result;
+// : (
+// <ForecastResult day={activeTab} weather="" />
+// )}

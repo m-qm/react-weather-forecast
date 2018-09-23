@@ -3,7 +3,7 @@ import '../build/styles/App.css';
 import { Row, Col, Container } from 'reactstrap';
 import axios from 'axios';
 import SearchBar from './Searchbar';
-import ResultNav from './Result/ResultNav';
+import Result from './Result/Result';
 
 const API_KEY = 'fbac2a1b66c21f764ad32d558e42b58c';
 
@@ -11,7 +11,12 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { activeTab: 0 };
+    this.state = {
+      activeTab: 0,
+      forecast: [],
+      current: {},
+      metric: true,
+    };
 
     this.handleTabChange = this.handleTabChange.bind(this);
     this.handleFetch = this.handleFetch.bind(this);
@@ -22,22 +27,34 @@ class App extends React.Component {
   }
 
   /* eslint class-methods-use-this: 0 */
-  handleFetch(id) {
-    console.log(id);
-    axios
-      .get(
-        `https://api.openweathermap.org/data/2.5/forecast?id=${id}&appid=${API_KEY}`
-      )
-      .then(response => {
-        console.log(response);
-      })
-      .catch(error => {
-        console.log(error);
-      });
+  handleFetch(id = 0) {
+    const { metric } = this.state;
+    const metricPrefix = metric ? '&units=metric' : '';
+    const forecastPrefix = 'https://api.openweathermap.org/data/2.5/forecast';
+    const curPrefix = 'https://api.openweathermap.org/data/2.5/weather';
+
+    if (id) {
+      axios
+        .get(`${forecastPrefix}?id=${id}&appid=${API_KEY}${metricPrefix}`)
+        .then(response => {
+          this.setState({ forecast: response.data.list });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+      axios
+        .get(`${curPrefix}?id=${id}&appid=${API_KEY}${metricPrefix}`)
+        .then(response => {
+          this.setState({ current: response.data });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
   }
 
   render() {
-    const { activeTab } = this.state;
+    const { activeTab, forecast, current } = this.state;
 
     return (
       <div className="app">
@@ -47,13 +64,14 @@ class App extends React.Component {
             <Col>
               <SearchBar handleFetch={this.handleFetch} />
 
-              <ResultNav
+              <Result
                 activeTab={activeTab}
                 handleTabChange={this.handleTabChange}
+                forecast={forecast}
+                current={current}
               />
             </Col>
           </Row>
-          Here the result display will be rendered
         </Container>
       </div>
     );
