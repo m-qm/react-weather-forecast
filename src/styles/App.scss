@@ -4,7 +4,22 @@ $navy-blue: #2279b3;
   text-align: center;
 }
 
+.app__container {
+  position: relative;
+}
+
 .app__title {
   margin: 3% 0;
   color: $navy-blue;
+
+  @media screen and (max-width: 400px) {
+    text-align: left;
+  }
+}
+
+.app__geo {
+  position: absolute;
+  right: 15px;
+  top: -4px;
+  margin-top: 6px;
 }
