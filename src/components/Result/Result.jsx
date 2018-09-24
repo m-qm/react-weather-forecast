@@ -80,10 +80,7 @@ const Result = ({ activeTab, handleTabChange, forecast, current }) => (
             />
           ) : (
             <ForecastResult
-              data={genChartData(
-                forecast,
-                normalizeDay(new Date().getUTCDay() + activeTab - 1)
-              )}
+              data={genChartData(forecast, normalizeDay(activeTab - 1))}
               types={Object.values(TYPES)}
             />
           )}
