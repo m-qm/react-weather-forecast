@@ -1,7 +1,7 @@
 import React from 'react';
-import $ from 'jquery';
 import Autocomplete from 'react-autocomplete';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
+import axios from 'axios';
 
 /* Autocomplete menu styles */
 const autocompleteMenu = {
@@ -22,9 +22,14 @@ class Searchbar extends React.Component {
     super(props);
     this.SEARCH_DEPTH = 200;
 
-    $.getJSON('/json/cities.min.json', json => {
-      this.cities = json;
-    });
+    axios
+      .get('/json/cities.min.json')
+      .then(cities => {
+        this.cities = cities.data;
+      })
+      .catch(error => {
+        console.log(error);
+      });
 
     this.state = {
       value: '',
