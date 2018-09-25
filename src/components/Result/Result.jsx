@@ -26,10 +26,14 @@ const TYPES = {
   PRESSURE: 'pressure',
 };
 
-/* Returns an object with { key::dataType : value::weatherData array } */
+/**
+ * Returns an object containing child objects in format {dataType:dataArray}
+ * @param {Array} weatherData
+ * @param {number} day
+ * @returns {Object}
+ */
 const genChartData = (weatherData, day) => {
   const generatedData = {};
-
   /* Extract all data for the days we need */
   const dayData = weatherData.filter(
     data => new Date(unixToDateTime(data.dt)).getDay() === day

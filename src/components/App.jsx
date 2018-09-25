@@ -37,13 +37,15 @@ class App extends React.Component {
   }
 
   fetchGeo() {
-    if (this.haveGeolocation()) {
-      this.handleFetch();
-      return;
+    if (navigator.geolocation) {
+      if (this.haveGeolocation()) {
+        this.handleFetch();
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(this.geoSuccess, this.geoError, {
+        enableHighAccuracy: true,
+      });
     }
-    navigator.geolocation.getCurrentPosition(this.geoSuccess, this.geoError, {
-      enableHighAccuracy: true,
-    });
   }
 
   geoSuccess(pos) {
@@ -115,7 +117,6 @@ class App extends React.Component {
           <Row>
             <Col>
               <SearchBar handleFetch={this.handleFetch} />
-
               <Result
                 activeTab={activeTab}
                 handleTabChange={this.handleTabChange}
